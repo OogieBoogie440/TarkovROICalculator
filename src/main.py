@@ -40,7 +40,7 @@ def main():
         'timestamp': 'Just now' # You could add real timestamp
     }
     
-    js_output = os.path.join(base_dir, 'dashboard', 'data.js')
+    js_output = os.path.join(base_dir, 'data.js')
     os.makedirs(os.path.dirname(js_output), exist_ok=True)
     
     with open(js_output, 'w', encoding='utf-8') as f:
