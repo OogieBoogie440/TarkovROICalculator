@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarkov Hideout ROI Scheduler</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Placeholder for icons if needed, using text for now -->
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="container">
+        <header>
+            <h1>HIDE<span class="highlight">OUT</span> ROI</h1>
+            <div class="status-bar">
+                <span id="last-updated">Updated: Just now</span>
+                <button id="refresh-btn" onclick="location.reload()">Refresh Data</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Sidebar / Controls -->
+            <aside class="controls">
+                <div class="glass-panel">
+                    <h2>Planner</h2>
+                    <div class="input-group">
+                        <label>Time Available</label>
+                        <select id="time-select">
+                            <option value="2h">2 Hours</option>
+                            <option value="4h" selected>4 Hours</option>
+                            <option value="8h">8 Hours</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Station</label>
+                        <select id="station-select">
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="glass-panel summary-panel">
+                    <h2>Top Profit/Hr</h2>
+                    <div id="top-profit-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <section class="content">
+                <div class="glass-panel queue-panel">
+                    <h2>Optimized Crafting Queue</h2>
+                    <div id="queue-container" class="queue-container">
+                        <!-- Queue Items go here -->
+                        <div class="empty-state">Select a station to see the plan</div>
+                    </div>
+                    <div class="queue-summary">
+                        <div class="stat">
+                            <span class="label">Total Time</span>
+                            <span class="value" id="total-time">0h 0m</span>
+                        </div>
+                        <div class="stat">
+                            <span class="label">Total Profit</span>
+                            <span class="value positive" id="total-profit">₽0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel details-panel">
+                    <h2>All Crafts (ROI Analysis)</h2>
+                    <div class="table-wrapper">
+                        <table id="crafts-table">
+                            <thead>
+                                <tr>
+                                    <th>Craft</th>
+                                    <th>Station</th>
+                                    <th>Time</th>
+                                    <th>Cost</th>
+                                    <th>Revenue</th>
+                                    <th>Profit</th>
+                                    <th>Profit/Hr</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
