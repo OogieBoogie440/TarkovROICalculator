@@ -36,13 +36,34 @@ def fetch_recipes_from_tarkov_dev():
                 count
             }
         }
+        barters {
+            id
+            trader {
+                name
+            }
+            level
+            requiredItems {
+                item {
+                    id
+                    name
+                }
+                count
+            }
+            rewardItems {
+                item {
+                    id
+                    name
+                }
+                count
+            }
+        }
     }
     """
     headers = {"Content-Type": "application/json"}
     print("Fetching recipes from tarkov.dev...")
     response = requests.post(TARKOV_DEV_URL, headers=headers, json={'query': query})
     if response.status_code == 200:
-        return response.json()['data']['crafts']
+        return response.json()['data']
     else:
         raise Exception(f"Tarkov.dev query failed: {response.status_code}")
 
@@ -104,15 +125,16 @@ def merge_data(recipes, market_data):
         
     return {
         'items': formatted_items,
-        'crafts': recipes
+        'crafts': recipes['crafts'],
+        'barters': recipes['barters']
     }
 
 def fetch_data():
     try:
-        recipes = fetch_recipes_from_tarkov_dev()
+        raw_data = fetch_recipes_from_tarkov_dev()
         market_data = fetch_prices_from_tarkov_market()
         
-        final_data = merge_data(recipes, market_data)
+        final_data = merge_data(raw_data, market_data)
         
         data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
         os.makedirs(data_dir, exist_ok=True)

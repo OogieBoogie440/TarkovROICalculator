@@ -106,6 +106,75 @@ class CraftAnalyzer:
         results.sort(key=lambda x: x['profit_per_hour'], reverse=True)
         return results
 
+class BarterAnalyzer:
+    def __init__(self, data: TarkovData):
+        self.data = data
+
+    def analyze_barters(self):
+        results = []
+        # We need to know the "Cash" price of the reward to see if barter is worth it.
+        
+        for barter in self.data.raw_data.get('barters', []):
+            trader = barter['trader']['name']
+            level = barter['level']
+            
+            if not barter['rewardItems']:
+                continue
+                
+            reward_item = barter['rewardItems'][0]['item']
+            reward_count = barter['rewardItems'][0]['count']
+            reward_id = reward_item['id']
+            reward_name = reward_item['name']
+            
+            # 1. Calculate Cost of Ingredients (Buying from Flea)
+            barter_cost = 0
+            ingredients = []
+            for req in barter['requiredItems']:
+                p = self.data.get_price(req['item']['id'])
+                total = p * req['count']
+                barter_cost += total
+                ingredients.append({
+                    'name': req['item']['name'],
+                    'count': req['count'],
+                    'price': p
+                })
+            
+            # 2. Value on Flea (Savings)
+            flea_price = self.data.get_price(reward_id)
+            flea_value = flea_price * reward_count
+            savings = flea_value - barter_cost
+            
+            # 3. Value to Trader (Flipping)
+            # We need the best trader sell price.
+            # logic.py's get_price defaults to Flea, so we need to look up sellFor specifically.
+            item_data = self.data.items.get(reward_id)
+            trader_sell_price = 0
+            if item_data and 'sellFor' in item_data:
+                # Find max trader price
+                # Note: fetch_data.py currently sets 'sellFor' to [] for the merged data.
+                # We might need to rely on 'basePrice' or fix fetch_data to include sellFor if possible.
+                # For now, we use basePrice as a proxy for Trader Sell if sellFor is empty.
+                trader_sell_price = item_data.get('basePrice', 0)
+            
+            trader_value = trader_sell_price * reward_count
+            flip_profit = trader_value - barter_cost
+            
+            results.append({
+                'id': barter['id'],
+                'trader': trader,
+                'level': level,
+                'reward_name': reward_name,
+                'cost': barter_cost,
+                'flea_value': flea_value,
+                'savings': savings,
+                'flip_profit': flip_profit,
+                'ingredients': ingredients
+            })
+            
+        # Sort by Savings by default
+        results.sort(key=lambda x: x['savings'], reverse=True)
+        return results
+
 class Scheduler:
     def __init__(self, analyzed_crafts):
         self.crafts = analyzed_crafts

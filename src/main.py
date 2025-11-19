@@ -1,7 +1,7 @@
 import json
 import os
 from fetch_data import fetch_data
-from logic import TarkovData, CraftAnalyzer, Scheduler
+from logic import TarkovData, CraftAnalyzer, Scheduler, BarterAnalyzer
 
 def main():
     # 1. Fetch latest data (optional, can comment out to use cache)
@@ -17,11 +17,15 @@ def main():
     
     tarkov_data = TarkovData(data_path)
     
-    # 3. Analyze
+    # 3. Analyze Crafts
     analyzer = CraftAnalyzer(tarkov_data)
     crafts = analyzer.analyze_crafts()
     
-    # 4. Schedule (Example scenarios)
+    # 4. Analyze Barters
+    barter_analyzer = BarterAnalyzer(tarkov_data)
+    barters = barter_analyzer.analyze_barters()
+    
+    # 5. Schedule (Example scenarios)
     scheduler = Scheduler(crafts)
     stations = set(c['station'] for c in crafts)
     
@@ -33,9 +37,10 @@ def main():
             '8h': scheduler.suggest_queue(8, station)
         }
 
-    # 5. Export for Dashboard
+    # 6. Export for Dashboard
     dashboard_data = {
         'crafts': crafts,
+        'barters': barters,
         'schedules': schedules,
         'timestamp': 'Just now' # You could add real timestamp
     }
